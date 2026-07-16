@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>EduPlatform | Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <h1>EduPlatform</h1>
+    </header>
+
+    <div class="container" style="max-width: 450px; padding-top: 10vh;">
+        <div class="glass-panel">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Sign In</h2>
+            
+            <div id="errorBox" class="alert alert-error" style="display: none;"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required placeholder="teacher@edu.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="password">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block" id="loginBtn" style="margin-top: 1rem;">Login</button>
+            </form>
+            
+            <p style="text-align: center; margin-top: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+                Are you a parent? <a th:href="@{/register}" style="color: var(--primary);">Register here</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const errorBox = document.getElementById('errorBox');
+            
+            btn.innerText = 'Authenticating...';
+            btn.disabled = true;
+            errorBox.style.display = 'none';
+            
+            const payload = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.role === 'TEACHER') {
+                        window.location.href = '/ui/teacher/dashboard';
+                    } else {
+                        window.location.href = '/ui/parent/dashboard';
+                    }
+                } else {
+                    errorBox.innerText = 'Invalid credentials. Please try again.';
+                    errorBox.style.display = 'block';
+                    btn.innerText = 'Login';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                errorBox.innerText = 'Network error occurred.';
+                errorBox.style.display = 'block';
+                btn.innerText = 'Login';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

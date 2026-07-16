@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <h1>EduPlatform | Teacher Dashboard</h1>
+        <nav>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
+            <!-- Create Offering Form -->
+            <div class="glass-panel" style="flex: 1; min-width: 300px;">
+                <h2 style="margin-bottom: 1.5rem;">Create New Offering</h2>
+
+                <form th:action="@{/ui/teacher/offering}" method="post">
+
+                    <div class="form-group">
+                        <label for="courseId">Course</label>
+                        <select id="courseId" name="courseId" required>
+                            <option value="" disabled selected>Select a course</option>
+                            <option th:each="course : ${courses}" th:value="${course.id}" th:text="${course.title}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">Batch Title</label>
+                        <input type="text" id="title" name="title" placeholder="e.g. Summer Python Camp" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="maxCapacity">Max Capacity</label>
+                        <input type="number" id="maxCapacity" name="maxCapacity" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="timeZone">Your Time Zone</label>
+                        <select id="timeZone" name="timeZone" required>
+                            <option value="America/New_York">America/New_York (EST/EDT)</option>
+                            <option value="Europe/London">Europe/London (GMT/BST)</option>
+                            <option value="Asia/Kolkata" selected>Asia/Kolkata (IST)</option>
+                            <option value="Australia/Sydney">Australia/Sydney (AEST)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Session (Local Time)</label>
+                        <div class="session-entry">
+                            <input type="datetime-local" name="sessions[0].startLocal" required>
+                            <span style="align-self: center; color: #94a3b8;">to</span>
+                            <input type="datetime-local" name="sessions[0].endLocal" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Publish Offering</button>
+                </form>
+            </div>
+
+            <!-- Existing Offerings -->
+            <div style="flex: 1.5; min-width: 300px;">
+                <h2 style="margin-bottom: 1.5rem;">Your Published Offerings</h2>
+
+                <div class="card-grid" style="grid-template-columns: 1fr;">
+                    <div th:each="offering : ${offerings}" class="glass-panel card" th:style="${offering.status == 'CANCELLED'} ? 'opacity: 0.6; border-left: 4px solid var(--error);' : ''">
+                        <span class="badge" th:text="'Course: ' + ${offering.courseTitle}"></span>
+                        <span th:if="${offering.status == 'CANCELLED'}" class="badge full" style="background: var(--error);">CANCELLED</span>
+                        <h3 th:text="${offering.title}"></h3>
+                        <p th:text="'Capacity: ' + ${offering.currentCapacity} + ' / ' + ${offering.maxCapacity}"></p>
+
+                        <div class="sessions-list">
+                            <p style="font-weight: 600; color: white;">Sessions (UTC):</p>
+                            <div th:each="sess : ${offering.sessions}"
+                                 style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.25rem;">
+                                <span th:text="${#temporals.format(sess.startTime.atZone(T(java.time.ZoneOffset).UTC), 'MMM dd, HH:mm')}"></span>
+                                &rarr;
+                                <span th:text="${#temporals.format(sess.endTime.atZone(T(java.time.ZoneOffset).UTC), 'HH:mm')} + ' UTC'"></span>
+                            </div>
+                        </div>
+
+                        <form th:if="${offering.status != 'CANCELLED'}" th:action="@{/ui/teacher/offering/{id}/cancel(id=${offering.id})}" method="post" style="margin-top: 1rem;">
+                            <button type="submit" class="btn btn-primary" style="background: var(--error); padding: 0.5rem 1rem; width: auto; font-size: 0.85rem;">
+                                Cancel Course
+                            </button>
+                        </form>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(offerings)}" class="glass-panel card" style="text-align: center;">
+                        <p>No offerings created yet. Use the form to publish your first class!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            fetch('/api/auth/logout', { method: 'POST' }).then(() => {
+                window.location.href = '/';
+            });
+        }
+    </script>
+</body>
+</html>

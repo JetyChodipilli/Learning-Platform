@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Parent Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <h1>EduPlatform | Parent Dashboard</h1>
+        <nav>
+            <a href="#" onclick="logout()">Logout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- My Bookings -->
+        <h2 style="margin-bottom: 1.5rem;">My Booked Classes</h2>
+        <div class="card-grid" style="margin-bottom: 4rem;">
+            <div th:each="booking : ${bookings}" class="glass-panel card" th:style="${booking.offeringStatus == 'CANCELLED'} ? 'border-left: 4px solid var(--error); opacity: 0.8;' : 'border-left: 4px solid var(--success);'">
+                <div th:if="${booking.offeringStatus == 'CANCELLED'}" style="background: var(--error); color: white; padding: 0.5rem; text-align: center; border-radius: 8px; margin-bottom: 1rem; font-weight: 600;">
+                    🚫 This Course Was Cancelled By The Teacher
+                </div>
+                
+                <h3 th:text="${booking.offeringTitle}"></h3>
+                <p th:if="${booking.createdAt != null}"
+                   th:text="'Booked on: ' + ${#temporals.format(booking.createdAt.atZone(T(java.time.ZoneOffset).UTC), 'MMM dd, yyyy')}">
+                </p>
+                <p th:if="${booking.createdAt == null}" style="color: #94a3b8;">Booking confirmed!</p>
+            </div>
+            <div th:if="${#lists.isEmpty(bookings)}" class="glass-panel card">
+                <p>You haven't booked any classes yet. Browse offerings below!</p>
+            </div>
+        </div>
+
+        <!-- Available Offerings -->
+        <h2 style="margin-bottom: 1.5rem;">Available Offerings</h2>
+        <div class="card-grid">
+            <div th:each="offering : ${offerings}" th:if="${offering.status != 'CANCELLED'}" class="glass-panel card">
+                <span th:class="${offering.currentCapacity >= offering.maxCapacity} ? 'badge full' : 'badge'"
+                      th:text="${offering.currentCapacity >= offering.maxCapacity} ? 'FULL' : 'OPEN'">
+                </span>
+                <h3 th:text="${offering.title}"></h3>
+                <p th:text="'Course: ' + ${offering.courseTitle}"></p>
+                <p th:text="'Capacity: ' + ${offering.currentCapacity} + ' / ' + ${offering.maxCapacity}"></p>
+
+                <div class="sessions-list">
+                    <p style="font-weight: 600; color: white;">Schedule (UTC):</p>
+                    <div th:each="sess : ${offering.sessions}"
+                         style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.25rem;">
+                        <span th:text="${#temporals.format(sess.startTime.atZone(T(java.time.ZoneOffset).UTC), 'MMM dd, HH:mm')}"></span>
+                        &rarr;
+                        <span th:text="${#temporals.format(sess.endTime.atZone(T(java.time.ZoneOffset).UTC), 'HH:mm')} + ' UTC'"></span>
+                    </div>
+                </div>
+
+                <form th:action="@{/ui/parent/book}" method="post" style="margin-top: 1.5rem;">
+                    <input type="hidden" name="offeringId" th:value="${offering.id}">
+                    <button type="submit"
+                            class="btn btn-primary btn-block"
+                            th:disabled="${offering.currentCapacity >= offering.maxCapacity}"
+                            th:style="${offering.currentCapacity >= offering.maxCapacity} ? 'background:#475569;cursor:not-allowed;' : ''">
+                        <span th:text="${offering.currentCapacity >= offering.maxCapacity} ? 'Sold Out' : 'Book Now'"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            fetch('/api/auth/logout', { method: 'POST' }).then(() => {
+                window.location.href = '/';
+            });
+        }
+    </script>
+</body>
+</html>

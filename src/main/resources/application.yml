@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: learning-platform
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:learning_platform}
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+  thymeleaf:
+    cache: false # Disabled for dev
+    check-template-location: true
+    enabled: true
+    mode: HTML
+    servlet:
+      content-type: text/html
+      charset: UTF-8
+
+server:
+  port: 8081
