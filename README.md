@@ -76,21 +76,10 @@ EduPlatform also protects critical booking operations using application-level tr
 # 🌐 Live Deployment
 
 <p align="center">
-  <a href="[YOUR_DEPLOYMENT_URL](https://learning-platform-1-mkyt.onrender.com)">
+  <a href="https://learning-platform-1-mkyt.onrender.com">
     <img src="https://img.shields.io/badge/Open_Live_EduPlatform-Visit_Now-success?style=for-the-badge&logo=googlechrome" alt="Open EduPlatform">
   </a>
 </p>
-
-| Resource | URL |
-|---|---|
-| Live Application | `YOUR_DEPLOYMENT_URL` |
-| Home Page | `YOUR_DEPLOYMENT_URL/` |
-| Login Page | `YOUR_DEPLOYMENT_URL/login` |
-| Parent Registration | `YOUR_DEPLOYMENT_URL/register/parent` |
-| Teacher Dashboard | `YOUR_DEPLOYMENT_URL/ui/teacher/dashboard` |
-| Parent Dashboard | `YOUR_DEPLOYMENT_URL/ui/parent/dashboard` |
-| Available Offerings | `YOUR_DEPLOYMENT_URL/offerings` |
-| Parent Bookings | `YOUR_DEPLOYMENT_URL/bookings` |
 
 ---
 
@@ -103,8 +92,8 @@ The following accounts may be used to demonstrate the application after deployme
 | Field | Value |
 |---|---|
 | Role | Teacher |
-| Email | `teacher@eduplatform.com` |
-| Password | `Teacher@123` |
+| Email | `teacher@edu.com` |
+| Password | `password` |
 | Access | Create and manage live-learning offerings |
 
 ## Parent Demo Account
@@ -112,8 +101,8 @@ The following accounts may be used to demonstrate the application after deployme
 | Field | Value |
 |---|---|
 | Role | Parent |
-| Email | `parent@eduplatform.com` |
-| Password | `Parent@123` |
+| Email | `parent@edu.com` |
+| Password | `password` |
 | Access | Browse offerings and book seats |
 
 > Demo credentials should be created through a Flyway seed migration or secure deployment seed process. Never publish real production administrator credentials in the repository.
@@ -306,75 +295,6 @@ flowchart TD
 
 ---
 
-# 🧠 Database Design and Concurrency
-
-EduPlatform applies multiple protection layers because application-level checks alone are not sufficient under heavy concurrent traffic.
-
-## 1. Pessimistic Write Locking
-
-When a booking request is processed, the selected offering is loaded with a pessimistic write lock.
-
-```java
-@Lock(LockModeType.PESSIMISTIC_WRITE)
-@Query("SELECT o FROM Offering o WHERE o.id = :id")
-Optional<Offering> findByIdForUpdate(@Param("id") Long id);
-```
-
-This produces database behavior similar to:
-
-```sql
-SELECT *
-FROM offerings
-WHERE id = ?
-FOR UPDATE;
-```
-
-Only one booking transaction may update the locked offering at a time. This prevents two parents from reserving the final seat simultaneously.
-
-## 2. Transactional Capacity Validation
-
-The booking service should execute inside a transaction:
-
-```java
-@Transactional
-public BookingResponse createBooking(CreateBookingRequest request) {
-    Offering offering = offeringRepository.findByIdForUpdate(request.offeringId())
-        .orElseThrow(() -> new ResourceNotFoundException("Offering not found"));
-
-    long bookedSeats = bookingRepository.countConfirmedByOfferingId(offering.getId());
-
-    if (bookedSeats >= offering.getMaxCapacity()) {
-        throw new CapacityExceededException("No seats are available");
-    }
-
-    return saveBooking(request, offering);
-}
-```
-
-## 3. Duplicate Booking Protection
-
-A parent may book a particular offering only once.
-
-```sql
-ALTER TABLE bookings
-ADD CONSTRAINT uk_booking_parent_offering
-UNIQUE (parent_id, offering_id);
-```
-
-## 4. Parent Schedule Overlap Protection
-
-PostgreSQL range types and GiST indexes prevent schedule collisions.
-
-```sql
-CREATE EXTENSION IF NOT EXISTS btree_gist;
-
-ALTER TABLE parent_schedule
-ADD CONSTRAINT no_parent_schedule_overlap
-EXCLUDE USING gist (
-    parent_id WITH =,
-    time_range WITH &&
-);
-```
 
 The `&&` operator returns true when two ranges overlap.
 
@@ -482,25 +402,6 @@ Install:
 ```bash
 git clone YOUR_GITHUB_REPOSITORY_URL
 cd learning-platform
-```
-
-### 2. Create environment configuration
-
-Create a `.env` file:
-
-```env
-POSTGRES_DB=learning_platform
-POSTGRES_USER=learning_user
-POSTGRES_PASSWORD=change_this_password
-
-DB_HOST=postgres
-DB_PORT=5432
-DB_NAME=learning_platform
-DB_USERNAME=learning_user
-DB_PASSWORD=change_this_password
-
-SERVER_PORT=8080
-SPRING_PROFILES_ACTIVE=prod
 ```
 
 ### 3. Build and start the platform
