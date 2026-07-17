@@ -76,7 +76,7 @@ EduPlatform also protects critical booking operations using application-level tr
 # 🌐 Live Deployment
 
 <p align="center">
-  <a href="YOUR_DEPLOYMENT_URL">
+  <a href="[YOUR_DEPLOYMENT_URL](https://learning-platform-1-mkyt.onrender.com)">
     <img src="https://img.shields.io/badge/Open_Live_EduPlatform-Visit_Now-success?style=for-the-badge&logo=googlechrome" alt="Open EduPlatform">
   </a>
 </p>
@@ -91,8 +91,6 @@ EduPlatform also protects critical booking operations using application-level tr
 | Parent Dashboard | `YOUR_DEPLOYMENT_URL/ui/parent/dashboard` |
 | Available Offerings | `YOUR_DEPLOYMENT_URL/offerings` |
 | Parent Bookings | `YOUR_DEPLOYMENT_URL/bookings` |
-
-> Replace every `YOUR_DEPLOYMENT_URL` value with the actual Render, Railway, AWS, Azure, Google Cloud, or other production URL.
 
 ---
 
@@ -249,72 +247,6 @@ flowchart TB
 │ PostgreSQL • Unique Constraints • GiST Exclusion Rules │
 │ UTC Session Storage • Flyway Schema History            │
 └────────────────────────────────────────────────────────┘
-```
-
-## Main Domain Components
-
-```mermaid
-classDiagram
-    class User {
-        Long id
-        String fullName
-        String email
-        String passwordHash
-        Role role
-        ZoneId timeZone
-    }
-
-    class Teacher {
-        Long id
-        String specialization
-    }
-
-    class Parent {
-        Long id
-        String phoneNumber
-    }
-
-    class Child {
-        Long id
-        String name
-        Integer age
-        String grade
-    }
-
-    class Course {
-        Long id
-        String title
-        String description
-    }
-
-    class Offering {
-        Long id
-        String title
-        Integer maxCapacity
-        ZoneId timeZone
-        OfferingStatus status
-    }
-
-    class Session {
-        Long id
-        Instant startUtc
-        Instant endUtc
-    }
-
-    class Booking {
-        Long id
-        BookingStatus status
-        Instant createdAt
-    }
-
-    User <|-- Teacher
-    User <|-- Parent
-    Parent "1" --> "0..*" Child
-    Teacher "1" --> "0..*" Offering
-    Course "1" --> "0..*" Offering
-    Offering "1" --> "1..*" Session
-    Parent "1" --> "0..*" Booking
-    Offering "1" --> "0..*" Booking
 ```
 
 ---
@@ -519,60 +451,6 @@ This strategy helps avoid:
 
 ---
 
-# 📁 Project Structure
-
-```text
-learning-platform/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/example/learningplatform/
-│   │   │       ├── config/
-│   │   │       ├── controller/
-│   │   │       │   ├── api/
-│   │   │       │   └── ui/
-│   │   │       ├── dto/
-│   │   │       │   ├── request/
-│   │   │       │   └── response/
-│   │   │       ├── entity/
-│   │   │       ├── enums/
-│   │   │       ├── exception/
-│   │   │       ├── mapper/
-│   │   │       ├── repository/
-│   │   │       ├── security/
-│   │   │       ├── service/
-│   │   │       │   └── impl/
-│   │   │       ├── util/
-│   │   │       └── LearningPlatformApplication.java
-│   │   └── resources/
-│   │       ├── db/
-│   │       │   └── migration/
-│   │       ├── static/
-│   │       │   ├── css/
-│   │       │   ├── js/
-│   │       │   └── images/
-│   │       ├── templates/
-│   │       │   ├── auth/
-│   │       │   ├── parent/
-│   │       │   ├── teacher/
-│   │       │   ├── error/
-│   │       │   └── index.html
-│   │       ├── application.yml
-│   │       └── application-prod.yml
-│   └── test/
-│       └── java/
-├── .env.example
-├── .gitignore
-├── Dockerfile
-├── docker-compose.yml
-├── pom.xml
-├── mvnw
-├── mvnw.cmd
-└── README.md
-```
-
----
-
 # 🚀 Getting Started
 
 ## Prerequisites
@@ -715,50 +593,6 @@ Run the `main()` method.
 | `JAVA_OPTS` | No | Empty | JVM runtime options |
 | `APP_BASE_URL` | Recommended | `http://localhost:8080` | Public application URL |
 
-## Example `application.yml`
-
-```yaml
-spring:
-  application:
-    name: learning-platform
-
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:learning_platform}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    open-in-view: false
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          time_zone: UTC
-
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-    time-zone: UTC
-
-  thymeleaf:
-    cache: false
-    check-template-location: true
-    enabled: true
-    mode: HTML
-
-server:
-  port: ${SERVER_PORT:8080}
-
-app:
-  base-url: ${APP_BASE_URL:http://localhost:8080}
-```
 
 ---
 
@@ -777,11 +611,6 @@ app:
 9. Submit the registration form.
 10. Log in with the newly created account.
 
-Recommended registration route:
-
-```text
-/register/parent
-```
 
 Recommended API endpoint:
 
@@ -797,7 +626,6 @@ Example request:
   "email": "anita.sharma@example.com",
   "phoneNumber": "9876543210",
   "password": "Parent@123",
-  "confirmPassword": "Parent@123",
   "timeZone": "Asia/Kolkata",
   "children": [
     {
@@ -862,7 +690,6 @@ Content-Type: application/json
   "email": "anita.sharma@example.com",
   "phoneNumber": "9876543210",
   "password": "Parent@123",
-  "confirmPassword": "Parent@123",
   "timeZone": "Asia/Kolkata"
 }
 ```
@@ -876,8 +703,8 @@ Content-Type: application/json
 
 ```json
 {
-  "email": "parent@eduplatform.com",
-  "password": "Parent@123"
+  "email": "parent@edu.com",
+  "password": "password"
 }
 ```
 
@@ -1032,60 +859,8 @@ curl -X POST "http://localhost:8080/bookings" \
 - Offering must have available capacity
 - Offering sessions must not overlap existing parent bookings
 
-## Example Error Response
-
-```json
-{
-  "timestamp": "2026-07-17T10:30:00Z",
-  "status": 409,
-  "error": "Conflict",
-  "code": "SCHEDULE_CONFLICT",
-  "message": "The selected class overlaps an existing booking.",
-  "path": "/bookings"
-}
-```
-
-## Recommended Global Exception Handler
-
-```java
-@RestControllerAdvice
-public class GlobalExceptionHandler {
-
-    @ExceptionHandler(ResourceNotFoundException.class)
-    ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ApiError.of("RESOURCE_NOT_FOUND", ex.getMessage()));
-    }
-
-    @ExceptionHandler({
-        DuplicateBookingException.class,
-        CapacityExceededException.class,
-        ScheduleConflictException.class
-    })
-    ResponseEntity<ApiError> handleConflict(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(ApiError.of("BOOKING_CONFLICT", ex.getMessage()));
-    }
-}
-```
 
 ---
-
-# 🧪 Testing
-
-## Run All Tests
-
-Linux or macOS:
-
-```bash
-./mvnw test
-```
-
-Windows:
-
-```powershell
-mvnw.cmd test
-```
 
 ## Recommended Test Coverage
 
@@ -1205,51 +980,6 @@ A production deployment requires:
 ./mvnw clean package -DskipTests
 ```
 
-### Start Command
-
-```bash
-java -Dserver.port=$PORT -jar target/*.jar
-```
-
-### Recommended Render Environment Variables
-
-```env
-DB_HOST=YOUR_RENDER_POSTGRES_HOST
-DB_PORT=5432
-DB_NAME=YOUR_RENDER_POSTGRES_DATABASE
-DB_USERNAME=YOUR_RENDER_POSTGRES_USER
-DB_PASSWORD=YOUR_RENDER_POSTGRES_PASSWORD
-SPRING_PROFILES_ACTIVE=prod
-APP_BASE_URL=https://YOUR_RENDER_SERVICE.onrender.com
-JAVA_OPTS=-Xms256m -Xmx512m
-```
-
-For Render’s internal PostgreSQL connection, use the exact values shown in the database’s **Connections** section. Do not manually invent the host, database, username, or password.
-
-## Docker Deployment
-
-```bash
-docker compose -f docker-compose.yml up -d --build
-```
-
-## Production Health Check
-
-Recommended endpoint:
-
-```text
-/actuator/health
-```
-
-Example:
-
-```json
-{
-  "status": "UP"
-}
-```
-
----
-
 # 🔒 Security Recommendations
 
 Before exposing EduPlatform publicly:
@@ -1319,53 +1049,6 @@ eduplatform.offerings.created
 
 ---
 
-# 🛠️ Troubleshooting
-
-<details>
-<summary><strong>Application cannot connect to PostgreSQL</strong></summary>
-
-Check container status:
-
-```bash
-docker compose ps
-```
-
-View PostgreSQL logs:
-
-```bash
-docker compose logs postgres
-```
-
-Confirm:
-
-- `DB_HOST`
-- `DB_PORT`
-- `DB_NAME`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-
-When the application runs inside Docker Compose, the database host is normally the service name:
-
-```env
-DB_HOST=postgres
-```
-
-When the application runs directly from an IDE, the database host is normally:
-
-```env
-DB_HOST=localhost
-```
-
-</details>
-
-<details>
-<summary><strong>Flyway migration failed</strong></summary>
-
-View application logs:
-
-```bash
-docker compose logs app
-```
 
 Check migration history:
 
@@ -1374,41 +1057,6 @@ SELECT *
 FROM flyway_schema_history
 ORDER BY installed_rank;
 ```
-
-Do not edit a migration that has already been applied in a shared database. Create a new versioned migration instead.
-
-</details>
-
-<details>
-<summary><strong>Port 8080 is already in use</strong></summary>
-
-Change the local Docker port mapping:
-
-```yaml
-ports:
-  - "8081:8080"
-```
-
-Then open:
-
-```text
-http://localhost:8081
-```
-
-</details>
-
-<details>
-<summary><strong>PostgreSQL exclusion constraint cannot be created</strong></summary>
-
-Enable the required extension:
-
-```sql
-CREATE EXTENSION IF NOT EXISTS btree_gist;
-```
-
-Place this statement in a Flyway migration before creating the exclusion constraint.
-
-</details>
 
 <details>
 <summary><strong>Application sometimes shows “Not Found” after deployment</strong></summary>
@@ -1423,67 +1071,20 @@ Verify:
 - Reverse proxy health checks target a valid route
 - Database migrations completed successfully
 - The application binds to the deployment platform’s assigned port
-
-For Render, use:
-
-```bash
-java -Dserver.port=$PORT -jar target/*.jar
-```
-
-</details>
-
-<details>
-<summary><strong>Database changes are not appearing</strong></summary>
-
-Flyway versioned migrations run once.
-
-Create a new migration:
-
-```text
-V2__add_parent_registration.sql
-V3__add_child_table.sql
-V4__add_booking_indexes.sql
-```
-
-For a disposable local database:
-
-```bash
-docker compose down -v
-docker compose up -d --build
-```
-
-</details>
-
 ---
 
 # 🗺️ Roadmap
 
 - [ ] JWT-based API authentication
-- [ ] Email verification
-- [ ] Forgot-password flow
-- [ ] Parent profile editing
 - [ ] Multiple children per parent
-- [ ] Teacher onboarding
-- [ ] Administrator dashboard
+- [ ] Teacher account is fixed
+- [ ] Parent Account creation
 - [ ] Course categories
 - [ ] Search and filtering
 - [ ] Waitlist management
-- [ ] Booking cancellation policy
-- [ ] Payment gateway integration
-- [ ] Email and SMS notifications
+- [ ] Course cancellation by teacher
 - [ ] Calendar integration
-- [ ] Live meeting links
-- [ ] Attendance tracking
-- [ ] Invoices and receipts
-- [ ] Teacher analytics
-- [ ] Parent notifications
-- [ ] Redis caching
 - [ ] OpenAPI and Swagger UI
-- [ ] Spring Boot Actuator
-- [ ] CI/CD pipeline
-- [ ] Automated cloud backups
-- [ ] Multi-language support
-
 ---
 
 # 🤝 Contributing
@@ -1557,7 +1158,7 @@ EduPlatform demonstrates how a Spring Boot application can solve real-world live
 </p>
 
 <p align="center">
-  <a href="YOUR_DEPLOYMENT_URL">Live Application</a>
+  <a href="https://learning-platform-1-mkyt.onrender.com">Live Application</a>
   ·
   <a href="YOUR_GITHUB_REPOSITORY_URL/issues">Report an Issue</a>
   ·
