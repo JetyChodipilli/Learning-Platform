@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://learning-platform-1-mkyt.onrender.com">
+  <a href="https://learning-platform-7nza.onrender.com">
     <img src="https://img.shields.io/badge/Live_Demo-Open_Platform-2ea44f?style=for-the-badge&logo=render" alt="Live Demo">
   </a>
   <a href="#-getting-started">
