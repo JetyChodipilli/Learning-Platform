@@ -76,7 +76,7 @@ EduPlatform also protects critical booking operations using application-level tr
 # 🌐 Live Deployment
 
 <p align="center">
-  <a href="https://learning-platform-1-mkyt.onrender.com">
+  <a href="https://learning-platform-7nza.onrender.com">
     <img src="https://img.shields.io/badge/Open_Live_EduPlatform-Visit_Now-success?style=for-the-badge&logo=googlechrome" alt="Open EduPlatform">
   </a>
 </p>
