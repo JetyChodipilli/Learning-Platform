@@ -3,9 +3,9 @@ spring:
     name: learning-platform
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:learning_platform}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: jdbc:postgresql://dpg-dagfvj942hec73c5qnng-a:5432/postgres_8kub
+    username: postgres_8kub_user
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
